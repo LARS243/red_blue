@@ -1,13 +1,12 @@
 import pygame
 from pygame.color import THECOLORS
 import sys
-#test
-#test2
+
 null_team_color = (220, 220, 220);
 red_team_color = (205, 92, 92);
 blue_team_color = (135, 206, 235);
 black_color = (150, 150, 150);
-root_project = "C:/Users/g/Desktop/ООП/kurs/";
+root_project = "C:/kurs/red_blue/kurs/";
 
 class tank:
     pass;
