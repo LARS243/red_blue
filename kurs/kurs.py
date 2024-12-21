@@ -7,10 +7,90 @@ null_team_color = (220, 220, 220);
 red_team_color = (205, 92, 92);
 blue_team_color = (135, 206, 235);
 black_color = (150, 150, 150);
-root_project = "D:/Python/red_blue/kurs";
+root_project = "D:/Python/red_blue/kurs/";
 
 class tank:
-    pass;
+    def __init__(self, color):
+        self.texture = pygame.image.load(root_project+'tank.png');
+        self.color = color
+        health = 10
+        atack = 4
+        max_health = 10
+        max_mobile = 3
+
+    def get_health(self):
+        return (self.health)
+
+    def get_max_mobile(self):
+        return(self.max_mobile)
+
+    def get_atack(self):
+        return(self.atack)
+
+    def set_health(self, new_health):
+        self.health = new_health
+
+    def draw_element(self, screen, x, y, size):
+        r = pygame.Rect(x, y, size-1, size-1);
+        pygame.draw.rect(screen, self.color, r, 0);
+        screen.blit(self.texture, (x, y))
+
+class infantry:
+    def __init__(self, color):
+        self.texture = pygame.image.load(root_project+'infantry.png');
+        self.color = color
+        health = 2
+        atack = 1
+        max_health = 2
+        max_mobile = 1
+
+    def get_health(self):
+        return (self.health)
+
+    def get_max_mobile(self):
+        return(self.max_mobile)
+
+    def get_atack(self):
+        return(self.atack)
+
+    def set_health(self, new_health):
+        self.health = new_health
+
+    def draw_element(self, screen, x, y, size):
+        r = pygame.Rect(x, y, size-1, size-1);
+        pygame.draw.rect(screen, self.color, r, 0);
+        screen.blit(self.texture, (x, y))
+    
+        
+
+class wheel:
+    def __init__(self, color):
+        self.texture = pygame.image.load(root_project+'wheel.png')
+        self.color = color
+        health = 5
+        atack = 2
+        max_health = 5
+        max_mobile = 5
+
+    def get_health(self):
+        return (self.health)
+
+    def get_max_mobile(self):
+        return(self.max_mobile)
+
+    def get_atack(self):
+        return(self.atack)
+
+    def set_health(self, new_health):
+        self.health = new_health
+
+    def draw_element(self, screen, x, y, size):
+        r = pygame.Rect(x, y, size-1, size-1);
+        pygame.draw.rect(screen, self.color, r, 0);
+        screen.blit(self.texture, (x, y))
+    
+    
+    
 
 class flag:
     def __init__(self, color):
