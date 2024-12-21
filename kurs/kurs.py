@@ -76,3 +76,5 @@ while True:
                 selected_element = field.get_cell(list(event.pos))
     pygame.display.flip();
     #s
+    #s
+    #s
