@@ -75,3 +75,4 @@ while True:
             if event.button == 1: 
                 selected_element = field.get_cell(list(event.pos))
     pygame.display.flip();
+    #s
