@@ -7,7 +7,7 @@ null_team_color = (220, 220, 220);
 red_team_color = (205, 92, 92);
 blue_team_color = (135, 206, 235);
 black_color = (150, 150, 150);
-root_project = "D:/Python/red_blue/kurs/";
+root_project = "C:/kurs/red_blue/kurs/";
 
 class tank:
     def __init__(self, color):
@@ -163,7 +163,13 @@ class class_field:
 class player_bar:
     def __init__(self):
         self.size_y = 800;
+        self.position_left = 0;
         self.size_bar_x = 200;
+        self.position_right = 1200;
+        self.texture_command = pygame.image.load(root_project+'command.png');
+        self.texture_up = pygame.image.load(root_project+'up.png');
+        self.texture_control = pygame.image.load(root_project+'control.png');
+        
 
 pygame.init();
 field = class_field();
