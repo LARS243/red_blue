@@ -63,8 +63,6 @@ class infantry:
         pygame.draw.rect(screen, self.color, r, 0);
         screen.blit(self.texture, (x, y))
     
-        
-
 class wheel:
     def __init__(self, color):
         self.texture = pygame.image.load(root_project+'wheel.png')
@@ -91,9 +89,6 @@ class wheel:
         r = pygame.Rect(x, y, size-1, size-1);
         pygame.draw.rect(screen, self.color, r, 0);
         screen.blit(self.texture, (x, y))
-    
-    
-    
 
 class flag:
     def __init__(self, color):
@@ -159,13 +154,16 @@ class class_field:
     
     def check_selected_cell(self, event):
         coord = field.get_cell(list(event.pos), event)
-        if (field.check_cell(coord)):
-            while(event.type != pygame.MOUSEBUTTONDOWN):
+        #if (field.check_cell(coord)):
+            #while(event.type != pygame.MOUSEBUTTONDOWN):
                 
-            coord_target = field.get_cell(list(event.pos), event)
-            if (field.check_cell(coord_target) == False):
+            #coord_target = field.get_cell(list(event.pos), event)
+            #if (field.check_cell(coord_target) == False):
 
-
+class player_bar:
+    def __init__(self):
+        self.size_y = 800;
+        self.size_bar_x = 200;
 
 pygame.init();
 field = class_field();
