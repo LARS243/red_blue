@@ -1,5 +1,5 @@
 import pygame
-from pygame.color import THECOLORS
+
 import sys
 #"C:/kurs/red_blue/kurs/"
 #"D:/Python/red_blue/kurs"
@@ -7,7 +7,7 @@ null_team_color = (220, 220, 220);
 red_team_color = (205, 92, 92);
 blue_team_color = (135, 206, 235);
 black_color = (150, 150, 150);
-root_project = "D:/Python/red_blue/kurs";
+root_project = "C:/kurs/red_blue/kurs/";
 
 class tank:
     pass;
