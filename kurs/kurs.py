@@ -1,5 +1,5 @@
 import pygame
-from pygame.color import THECOLORS
+
 import sys
 #"C:/kurs/red_blue/kurs/"
 #"D:/Python/red_blue/kurs"
