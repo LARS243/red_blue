@@ -8,7 +8,6 @@ red_team_color = (205, 92, 92);
 blue_team_color = (135, 206, 235);
 black_color = (150, 150, 150);
 root_project = "C:/kurs/red_blue/kurs/";
-#s
 
 class tank:
     pass;
@@ -58,8 +57,8 @@ class class_field:
         for i in range(len(self.matrix)):
             for j in range(len(self.matrix[i])):
                 self.matrix[i][j].draw_element(screen, i * self.size_cell-1 + self.size_bar_x, j * self.size_cell-1, self.size_cell-1)
-                
-
+def mause():
+    pass
 
 pygame.init();
 field = class_field();
