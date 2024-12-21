@@ -13,19 +13,10 @@ class tank:
     def __init__(self, color):
         self.texture = pygame.image.load(root_project+'tank.png');
         self.color = color
-        health = 10
-        atack = 4
-        max_health = 10
-        max_mobile = 3
-
-    def get_health(self):
-        return (self.health)
-
-    def get_max_mobile(self):
-        return(self.max_mobile)
-
-    def get_atack(self):
-        return(self.atack)
+        self.health = 10
+        self.atack = 4
+        self.max_health = 10
+        self.max_mobile = 3
 
     def set_health(self, new_health):
         self.health = new_health
@@ -39,19 +30,10 @@ class infantry:
     def __init__(self, color):
         self.texture = pygame.image.load(root_project+'infantry.png');
         self.color = color
-        health = 2
-        atack = 1
-        max_health = 2
-        max_mobile = 1
-
-    def get_health(self):
-        return (self.health)
-
-    def get_max_mobile(self):
-        return(self.max_mobile)
-
-    def get_atack(self):
-        return(self.atack)
+        self.health = 2
+        self.atack = 1
+        self.max_health = 2
+        self.max_mobile = 1
 
     def set_health(self, new_health):
         self.health = new_health
@@ -67,19 +49,10 @@ class wheel:
     def __init__(self, color):
         self.texture = pygame.image.load(root_project+'wheel.png')
         self.color = color
-        health = 5
-        atack = 2
-        max_health = 5
-        max_mobile = 5
-
-    def get_health(self):
-        return (self.health)
-
-    def get_max_mobile(self):
-        return(self.max_mobile)
-
-    def get_atack(self):
-        return(self.atack)
+        self.health = 5
+        self.atack = 2
+        self.max_health = 5
+        self.max_mobile = 5
 
     def set_health(self, new_health):
         self.health = new_health
@@ -146,6 +119,7 @@ field = class_field();
 screen = pygame.display.set_mode((field.size_x, field.size_y));
 screen.fill(field.color);
 field.draw_cells(screen);
+wh = wheel(red_team_color);
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
