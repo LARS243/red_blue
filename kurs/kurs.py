@@ -57,8 +57,9 @@ class class_field:
         for i in range(len(self.matrix)):
             for j in range(len(self.matrix[i])):
                 self.matrix[i][j].draw_element(screen, i * self.size_cell-1 + self.size_bar_x, j * self.size_cell-1, self.size_cell-1)
-def mause():
-    pass
+    def get_cell(self, coord):
+        coord[0] -= self.size_bar_x;
+        return self.matrix[coord[0]//self.size_cell][coord[1]//self.size_cell];
 
 pygame.init();
 field = class_field();
@@ -68,6 +69,9 @@ field.draw_cells(screen);
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+            pygame.quit();
+            sys.exit();
+        if event.type == pygame.MOUSEBUTTONDOWN: 
+            if event.button == 1: 
+                selected_element = field.get_cell(list(event.pos))
     pygame.display.flip();
