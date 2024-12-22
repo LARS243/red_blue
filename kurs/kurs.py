@@ -8,7 +8,7 @@ null_team_color = (220, 220, 220);
 red_team_color = (205, 92, 92);
 blue_team_color = (135, 206, 235);
 black_color = (150, 150, 150);
-root_project = "C:/kurs/red_blue/kurs/";
+root_project = "D:/Python/red_blue/kurs/";
 
 class tank:
     def __init__(self, color):
@@ -223,8 +223,8 @@ class player_bar:
         
         self.command_max = 10;
         self.command = 10;
-        self.power = 0;
-        self.max_power = 0;
+        self.power = 300;
+        self.max_power = 300;
         self.power_up = 0;
         
         self.texture_command = pygame.image.load(root_project+'command.png');
@@ -297,6 +297,69 @@ def reverse_color(color):
         return red_team_color
     else:
         return blue_team_color
+    
+    
+def select_cell(event, these_selected_team):
+    coord = field.get_cell(list(event.pos))
+    if(field.check_cell(coord) == False and field.matrix[coord[0]][coord[1]].color == these_selected_team.team):
+        field.matrix[coord[0]][coord[1]].color = black_color
+        field.draw_cells(screen)
+        pygame.display.flip()
+        add = True
+        while(add):
+            for event_k in pygame.event.get():
+                if event_k.type == pygame.KEYDOWN:
+                    if (event_k.key == pygame.K_1 and these_selected_team.power >= 3):
+                        field.matrix[coord[0]][coord[1]] = infantry(these_selected_team.team)
+                        field.matrix[coord[0]][coord[1]].mobile = 0
+                        these_selected_team.power -= 3
+                        these_selected_team.command -= 1
+                        field.draw_cells(screen)
+                        these_selected_team.draw_left_interface(screen)
+                        pygame.display.flip()
+                        add = False
+
+                    if (event_k.key == pygame.K_2 and these_selected_team.power >= 5):
+                        field.matrix[coord[0]][coord[1]] = wheel(these_selected_team.team)
+                        field.matrix[coord[0]][coord[1]].mobile = 0
+                        these_selected_team.power -= 5
+                        these_selected_team.command -= 1
+                        field.draw_cells(screen)
+                        these_selected_team.draw_left_interface(screen)
+                        pygame.display.flip()
+                        add = False
+
+                    if (event_k.key == pygame.K_3 and these_selected_team.power >= 7):
+                        field.matrix[coord[0]][coord[1]] = tank(these_selected_team.team)
+                        field.matrix[coord[0]][coord[1]].mobile = 0
+                        these_selected_team.power -= 7
+                        these_selected_team.command -= 1
+                        field.draw_cells(screen)
+                        these_selected_team.draw_left_interface(screen)
+                        pygame.display.flip()
+                        add = False  
+
+                    else:
+                        field.matrix[coord[0]][coord[1]].color = these_selected_team.team
+                        field.draw_cells(screen)
+                        these_selected_team.draw_left_interface(screen)
+                        pygame.display.flip()
+                        add = False  
+
+
+def new_unit(these_selected_team, field, screen):
+    add_unit = True
+    while(add_unit):
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN: 
+                if (event.button == 1):
+                    select_cell(event, these_selected_team)
+                else:
+                    add_unit = False
+                    field.draw_cells(screen)
+                    these_selected_team.draw_left_interface(screen)
+                    pygame.display.flip()
+                    break
 
 pygame.init();
 field = class_field();
@@ -310,6 +373,7 @@ turn = red_team_color;
 pl_bar_red.draw_left_interface(screen);
 wh = wheel(red_team_color);
 pl_bar_red.draw_right_interface(screen, wh);
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -330,4 +394,10 @@ while True:
                 else:
                     turn = reverse_color(turn);
                     pl_bar_red.draw_left_interface(screen);
+            if event.key == pygame.K_TAB:
+                if (turn == red_team_color):
+                    new_unit(pl_bar_red, field, screen)
+                else:
+                    new_unit(pl_bar_blue, field, screen)
+
     pygame.display.flip();
