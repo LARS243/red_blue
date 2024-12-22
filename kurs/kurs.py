@@ -28,8 +28,8 @@ class tank:
     
     def resource_renewal(self):
         self.mobile = self.max_mobile
-        if self.supply:
-            self.health = (self.health + 1) % self.max_health;
+        if self.health < self.max_health:
+            self.health = self.health + 1;
         else:
             self.health -= 1;
 
@@ -51,8 +51,8 @@ class infantry:
         
     def resource_renewal(self):
         self.mobile = self.max_mobile
-        if self.supply:
-            self.health = (self.health + 1) % self.max_health;
+        if self.health < self.max_health:
+            self.health = self.health + 1;
         else:
             self.health -= 1;
         
@@ -76,7 +76,8 @@ class wheel:
     def resource_renewal(self):
         self.mobile = self.max_mobile
         if self.supply:
-            self.health = (self.health + 1) % self.max_health;
+            if self.health < self.max_health:
+                self.health = self.health + 1;
         else:
             self.health -= 1;
     
@@ -97,7 +98,8 @@ class flag:
         pygame.draw.rect(screen, self.color, r, 0);
         screen.blit(self.texture, (x, y))
     def resource_renewal(self):
-        self.health = (self.health + 1) % self.max_health;
+        if self.health < self.max_health:
+            self.health = self.health + 1;
             
 
 class null_cell:
@@ -127,6 +129,7 @@ class class_field:
         matrix[0][1].color = red_team_color;
         matrix[1][0].color = red_team_color;
         matrix[1][1].color = red_team_color;
+        matrix[1][1] = wheel(red_team_color);
         matrix[-1][-1] = flag(blue_team_color);
         matrix[-1][-2].color = blue_team_color;
         matrix[-2][-1].color = blue_team_color;
@@ -141,7 +144,6 @@ class class_field:
 
     def get_cell(self, coord):
         coord[0] -= self.size_bar_x;
-        print (coord[0]//self.size_cell , " " , coord[1]//self.size_cell)
         return [coord[0]//self.size_cell,coord[1]//self.size_cell];
 
     def check_cell(self, coord):
@@ -162,37 +164,40 @@ class class_field:
             
         return(False)
     
-    def movement(self, coord, coord_target, buffer_color):
+    def movement(self, coord, coord_target, buffer_color,  bar, screen):
         field.matrix[coord_target[0]][coord_target[1]] = field.matrix[coord[0]][coord[1]]
         field.matrix[coord_target[0]][coord_target[1]].mobile -=1
         field.matrix[coord[0]][coord[1]] = null_cell(buffer_color)
         coord[0] = coord_target[0]
         coord[1] = coord_target[1]
+        bar.draw_right_interface(screen, field.matrix[coord_target[0]][coord_target[1]]);
         field.draw_cells(screen)
         pygame.display.flip()
 
-    def fire(self, coord, coord_target, buffer_color):
+    def fire(self, coord, coord_target, buffer_color,  bar, screen):
         if ((field.matrix[coord_target[0]][coord_target[1]].health - field.matrix[coord[0]][coord[1]].atack) <= 0):
             field.matrix[coord_target[0]][coord_target[1]] = null_cell(field.matrix[coord_target[0]][coord_target[1]].color)
             field.matrix[coord[0]][coord[1]].mobile = 0
             field.draw_cells(screen)
-            pygame.display.flip()
+            
 
         else:
             field.matrix[coord_target[0]][coord_target[1]].health -= field.matrix[coord[0]][coord[1]].atack
             field.matrix[coord[0]][coord[1]].mobile = 0
+        bar.draw_right_interface(screen, field.matrix[coord[0]][coord[1]]);
+        pygame.display.flip()
 
-    def left_button_click(self, event, coord, buffer_color):
+    def left_button_click(self, event, coord, buffer_color, bar, screen):
         coord_target = field.get_cell(list(event.pos))
         check = field.check_cell(coord_target)
         if ((check == False) and (1 == (abs(coord[0] - coord_target[0])) + (abs(coord[1] - coord_target[1]))) and (field.matrix[coord[0]][coord[1]].mobile > 0) and coord_target[0] <=19 and coord_target[0] >=0 and coord_target[1] <= 15 and coord_target[1] >= 0):
-             field.movement(coord, coord_target, buffer_color)
+             field.movement(coord, coord_target, buffer_color, bar, screen)
 
         elif ((check == True) and (1 == (abs(coord[0] - coord_target[0])) + (abs(coord[1] - coord_target[1]))) and (field.matrix[coord[0]][coord[1]].mobile > 0)):
-            field.fire(coord, coord_target, buffer_color)
+            field.fire(coord, coord_target, buffer_color, bar, screen)
         
     
-    def check_selected_cell(self, event, screen):
+    def check_selected_cell(self, event, screen, bar):
         coord = field.get_cell(list(event.pos))
         check = field.check_cell(coord)
         if (check):
@@ -205,9 +210,8 @@ class class_field:
                 for event in pygame.event.get():
                     if event.type == pygame.MOUSEBUTTONDOWN: 
                         if (event.button == 1):
-                              field.left_button_click(event, coord, buffer_color)
+                              field.left_button_click(event, coord, buffer_color, bar, screen)
                         else:
-                            print("hue")
                             field.matrix[coord[0]][coord[1]].color = buffer_color
                             movement = False
                             field.draw_cells(screen)
@@ -223,22 +227,37 @@ class class_field:
                 for j in range(len(self.matrix[i])):
                     if type(self.matrix[i][j]) != flag and self.matrix[i][j].color == turn:
                         if i < 19:
-                            if (self.matrix[i+1][j].supply == True):
-                                self.matrix[i][j] = True;
+                            if (self.matrix[i+1][j].supply == True and self.matrix[i+1][j].color == turn):
+                                self.matrix[i][j].supply  = True;
                         if i > 0:
-                            if (self.matrix[i-1][j].suply == True):
-                                self.matrix[i][j] = True;
+                            if (self.matrix[i-1][j].supply == True and self.matrix[i-1][j].color == turn):
+                                self.matrix[i][j].supply  = True;
                         if j > 0:
-                            if (self.matrix[i][j-1].suply == True):
-                                self.matrix[i][j] = True;
+                            if (self.matrix[i][j-1].supply == True and self.matrix[i][j-1].color == turn):
+                                self.matrix[i][j].supply  = True;
                         if j < 15:
-                            if (self.matrix[i][j+1].suply == True):
-                                self.matrix[i][j] = True;
-    def update_units(self, turn):
-        for i in self.matrix:
-            for j in self.matrix:
-                if (self.matrix[i][j].color == turn):
-                    self.matrix[i][j].resource_renewal();
+                            if (self.matrix[i][j+1].supply == True and self.matrix[i][j+1].color == turn):
+                                self.matrix[i][j].supply  = True;
+    def update_units(self, turn, screen):
+        for i in range(len(self.matrix)):
+            for j in range(len(self.matrix)):
+                if self.check_cell([i, j]):
+                    if (self.matrix[i][j].color == turn):
+                        self.matrix[i][j].resource_renewal();
+                        if self.matrix[i][j].health <= 0:
+                            self.matrix[i][j] = null_cell(turn);
+                            self.draw_cells(screen)
+    def update_power(self, turn):
+        power_up = 0;
+        power_max = 0;
+        for i in range(len(self.matrix)):
+            for j in range(len(self.matrix[i])):
+                if not self.check_cell([i, j]):
+                    
+                    if (self.matrix[i][j].color == turn):
+                        power_max += 3;
+                        power_up += 1;
+        return [power_up, power_max]
 
 class player_bar:
     def __init__(self, color):
@@ -261,8 +280,12 @@ class player_bar:
         self.texture_damage = pygame.image.load(root_project+'damage.png');
         self.texture_hp = pygame.image.load(root_project+'hp.png');
         self.texture_move = pygame.image.load(root_project+'mov.png');
+        self.texture_supply_true = pygame.image.load(root_project+'supply=true.png');
+        self.texture_supply_false = pygame.image.load(root_project+'supply=false.png');
         
     def draw_left_interface(self, screen):
+        r = pygame.Rect(0, 0, self.size_bar_x, self.size_y);
+        pygame.draw.rect(screen,  black_color, r, 0);
         font.init()
         Font = font.Font(None, 50)
         # отрисовка коммандного ресурса
@@ -311,13 +334,25 @@ class player_bar:
         pygame.draw.rect(screen, self.team , r, 0);
         screen.blit(self.texture_move, (1201, 301))
         text = str(unit.mobile) + "/" + str(unit.max_mobile);
+        #text = str(unit.supply);
         a = Font.render(text, 1, (100, 100, 100))
         screen.blit(a, (1260, 310))
+        
+        r = pygame.Rect(1200, 400, 50, 50);
+        pygame.draw.rect(screen, self.team , r, 0);
+        if unit.supply:
+            screen.blit(self.texture_supply_true, (1201, 401))
+        else:
+            screen.blit(self.texture_supply_false, (1201, 401))
 
 
-    def resource_renewal(self):
+    def resource_renewal(self, max_power, power_up):
+        self.max_power = max_power;
+        self.power_up = power_up;
         self.command = self.command_max;
-        self.power = (self.power + self.power_up) % self.command_max;
+        self.power = self.power + self.power_up;
+        if self.power > self.max_power:
+            self.power = self.max_power;
         
 def reverse_color(color):
     if color == blue_team_color:
@@ -336,7 +371,6 @@ pl_bar_blue = player_bar(blue_team_color);
 turn = red_team_color;
 pl_bar_red.draw_left_interface(screen);
 wh = wheel(red_team_color);
-pl_bar_red.draw_right_interface(screen, wh);
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -347,15 +381,31 @@ while True:
                 selected_element = field.get_cell(list(event.pos))
                 if (field.check_cell(selected_element)):
                     pl_bar_red.draw_right_interface(screen, field.matrix[selected_element[0]][selected_element[1]]);
-                field.check_selected_cell(event, screen)
+                if field.matrix[selected_element[0]][selected_element[1]].color == turn:
+                    if turn == blue_team_color:
+                        if (pl_bar_blue.command != 0):
+                            field.check_selected_cell(event, screen, pl_bar_blue)
+                            pl_bar_blue.command -= 1;
+                            pl_bar_blue.draw_left_interface(screen);
+                    else:
+                        if (pl_bar_red.command != 0):
+                            field.check_selected_cell(event, screen, pl_bar_red)
+                            pl_bar_red.command -= 1;
+                            pl_bar_red.draw_left_interface(screen);
+                            
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
+                field.update(turn);
+                field.update_units(turn, screen);
+                power_up, max_power = field.update_power(turn);
                 if turn == red_team_color:
                     turn = reverse_color(turn);
-                    print("a");
+                    
+                    pl_bar_red.resource_renewal(max_power, power_up);
                     pl_bar_blue.draw_left_interface(screen);
                 else:
                     turn = reverse_color(turn);
+                    pl_bar_blue.resource_renewal(max_power, power_up);
                     pl_bar_red.draw_left_interface(screen);
-    field.update(turn);
+    
     pygame.display.flip();
