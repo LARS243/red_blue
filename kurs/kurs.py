@@ -304,6 +304,7 @@ while True:
             if event.key == pygame.K_SPACE:
                 if turn == red_team_color:
                     turn = reverse_color(turn);
+                    print("a");
                     pl_bar_blue.draw_left_interface(screen);
                 else:
                     turn = reverse_color(turn);
