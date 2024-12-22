@@ -44,7 +44,7 @@ class infantry:
 
 class wheel:
     def __init__(self, color):
-        self.texture = pygame.image.load(root_project+'damage.png')
+        self.texture = pygame.image.load(root_project+'wheel.png')
         self.color = color
         self.health = 5
         self.atack = 2
