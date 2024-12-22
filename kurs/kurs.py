@@ -170,8 +170,8 @@ class class_field:
                             pygame.display.flip()
                             break
 class player_bar:
-    def __init__(self):
-        
+    def __init__(self, color):
+        self.team = color;
         self.size_y = 800;
         self.position_left = 0;
         self.size_bar_x = 200;
@@ -187,39 +187,51 @@ class player_bar:
         self.texture_up = pygame.image.load(root_project+'up.png');
         self.texture_control = pygame.image.load(root_project+'control.png');
         
-    def draw_left_interface(self, screen, team):
+    def draw_left_interface(self, screen):
         font.init()
         Font = font.Font(None, 50)
         # отрисовка коммандного ресурса
         r = pygame.Rect(0, 100, 50, 50);
-        pygame.draw.rect(screen, team, r, 0);
+        pygame.draw.rect(screen, self.team , r, 0);
         screen.blit(self.texture_command, (0, 100))
         text = str(self.command) + "/" + str(self.command_max);
         a = Font.render(text, 1, (100, 100, 100))
         screen.blit(a, (60, 110))
-        
+        #отрисовка прироста влияние
         r = pygame.Rect(0, 200, 50, 50);
-        pygame.draw.rect(screen, team, r, 0);
+        pygame.draw.rect(screen, self.team , r, 0);
         screen.blit(self.texture_up, (0, 200))
         text = str(self.power_up);
         a = Font.render(text, 1, (100, 100, 100))
         screen.blit(a, (60, 210))
-        
+        #отрисовка влияния
         r = pygame.Rect(0, 300, 50, 50);
-        pygame.draw.rect(screen, team, r, 0);
+        pygame.draw.rect(screen, self.team , r, 0);
         screen.blit(self.texture_control, (0, 300))
         text = str(self.power) + "/" + str(self.max_power);
         a = Font.render(text, 1, (100, 100, 100))
         screen.blit(a, (60, 310))
+
+    def resource_renewal(self):
+        self.command = self.command_max;
+        self.power = (self.power + self.power_up) % self.command_max;
         
+def reverse_color(color):
+    if color == blue_team_color:
+        return red_team_color
+    else:
+        return blue_team_color
+
 pygame.init();
 field = class_field();
 screen = pygame.display.set_mode((field.size_x, field.size_y));
 screen.fill(field.color);
 field.draw_cells(screen);
-wh = wheel(red_team_color);
-pl = player_bar();
-pl.draw_left_interface(screen, blue_team_color);
+
+pl_bar_red = player_bar(red_team_color);
+pl_bar_blue = player_bar(blue_team_color);
+turn = red_team_color;
+pl_bar_red.draw_left_interface(screen);
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -230,4 +242,12 @@ while True:
                 selected_element = field.check_selected_cell(event, screen)
                 print(selected_element)
                 field.check_selected_cell(event, screen)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                if turn == red_team_color:
+                    turn = reverse_color(turn);
+                    pl_bar_blue.draw_left_interface(screen);
+                else:
+                    turn = reverse_color(turn);
+                    pl_bar_red.draw_left_interface(screen);
     pygame.display.flip();
