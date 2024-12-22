@@ -8,7 +8,7 @@ null_team_color = (220, 220, 220);
 red_team_color = (205, 92, 92);
 blue_team_color = (135, 206, 235);
 black_color = (150, 150, 150);
-root_project = "C:/kurs/red_blue/kurs/";
+root_project = "D:/Python/red_blue/kurs/";
 
 class tank:
     def __init__(self, color):
@@ -64,6 +64,7 @@ class flag:
     def __init__(self, color):
         self.texture = pygame.image.load(root_project+'flag.png');
         self.color = color;
+        self.health = 20
     def draw_element(self, screen, x, y, size):
         r = pygame.Rect(x, y, size-1, size-1);
         pygame.draw.rect(screen, self.color, r, 0);
@@ -113,19 +114,49 @@ class class_field:
         return [coord[0]//self.size_cell,coord[1]//self.size_cell];
 
     def check_cell(self, coord):
-        print ("ebash")
         ##type(matrix[0][0]) == flag
-        if (type(self.matrix[coord[0]][coord[1]]) == tank):
-            return(True)
+        if coord[0] <=19 and coord[0] >=0 and coord[1] <= 15 and coord[1] >= 0:
 
-        if (type(self.matrix[coord[0]][coord[1]]) == infantry):
-            return(True)
+            if (type(self.matrix[coord[0]][coord[1]]) == tank):
+                return(True)
 
-        if (type(self.matrix[coord[0]][coord[1]]) == wheel):
-            print ("blyat")
-            return(True)
-        
+            if (type(self.matrix[coord[0]][coord[1]]) == infantry):
+                return(True)
+
+            if (type(self.matrix[coord[0]][coord[1]]) == wheel):
+                return(True)
+            
         return(False)
+    
+    def movement(self, coord, coord_target, buffer_color):
+        field.matrix[coord_target[0]][coord_target[1]] = field.matrix[coord[0]][coord[1]]
+        field.matrix[coord_target[0]][coord_target[1]].mobile -=1
+        field.matrix[coord[0]][coord[1]] = null_cell(buffer_color)
+        coord[0] = coord_target[0]
+        coord[1] = coord_target[1]
+        field.draw_cells(screen)
+        pygame.display.flip()
+
+    def fire(self, coord, coord_target, buffer_color):
+        if ((field.matrix[coord_target[0]][coord_target[1]].health - field.matrix[coord[0]][coord[1]].atack) <= 0):
+            field.matrix[coord_target[0]][coord_target[1]] = null_cell(field.matrix[coord_target[0]][coord_target[1]].color)
+            field.matrix[coord[0]][coord[1]].mobile = 0
+            field.draw_cells(screen)
+            pygame.display.flip()
+
+        else:
+            field.matrix[coord_target[0]][coord_target[1]].health -= field.matrix[coord[0]][coord[1]].atack
+            field.matrix[coord[0]][coord[1]].mobile = 0
+
+    def left_button_click(self, event, coord, buffer_color):
+        coord_target = field.get_cell(list(event.pos))
+        check = field.check_cell(coord_target)
+        if ((check == False) and (1 == (abs(coord[0] - coord_target[0])) + (abs(coord[1] - coord_target[1]))) and (field.matrix[coord[0]][coord[1]].mobile > 0) and coord_target[0] <=19 and coord_target[0] >=0 and coord_target[1] <= 15 and coord_target[1] >= 0):
+             field.movement(coord, coord_target, buffer_color)
+
+        elif ((check == True) and (1 == (abs(coord[0] - coord_target[0])) + (abs(coord[1] - coord_target[1]))) and (field.matrix[coord[0]][coord[1]].mobile > 0)):
+            field.fire(coord, coord_target, buffer_color)
+        
     
     def check_selected_cell(self, event, screen):
         coord = field.get_cell(list(event.pos))
@@ -135,33 +166,12 @@ class class_field:
             field.matrix[coord[0]][coord[1]].color = black_color
             field.draw_cells(screen)
             pygame.display.flip()
-            print ("hueta")
             movement = True
             while (movement):
                 for event in pygame.event.get():
                     if event.type == pygame.MOUSEBUTTONDOWN: 
                         if (event.button == 1):
-                            coord_target = field.get_cell(list(event.pos))
-                            check = field.check_cell(coord_target)
-                            if ((check == False) and (1 == (abs(coord[0] - coord_target[0])) + (abs(coord[1] - coord_target[1]))) and (field.matrix[coord[0]][coord[1]].mobile > 0)):
-                                print("rot")
-                                field.matrix[coord_target[0]][coord_target[1]] = field.matrix[coord[0]][coord[1]]
-                                field.matrix[coord_target[0]][coord_target[1]].mobile -=1
-                                field.matrix[coord[0]][coord[1]] = null_cell(buffer_color)
-                                coord[0] = coord_target[0]
-                                coord[1] = coord_target[1]
-                                field.draw_cells(screen)
-                                pygame.display.flip()
-                            elif ((check == True) and (1 == (abs(coord[0] - coord_target[0])) + (abs(coord[1] - coord_target[1]))) and (field.matrix[coord[0]][coord[1]].mobile > 0)):
-                                print("ANDRUHA.EBASH")
-                                if ((field.matrix[coord_target[0]][coord_target[1]].health - field.matrix[coord[0]][coord[1]].atack) <= 0):
-                                    field.matrix[coord_target[0]][coord_target[1]] = null_cell(field.matrix[coord_target[0]][coord_target[1]].color)
-                                    field.matrix[coord[0]][coord[1]].mobile -= 1
-                                    field.draw_cells(screen)
-                                    pygame.display.flip()
-                                else:
-                                    field.matrix[coord_target[0]][coord_target[1]].health -= field.matrix[coord[0]][coord[1]].atack
-                                    field.matrix[coord[0]][coord[1]].mobile -= 1       
+                              field.left_button_click(event, coord, buffer_color)
                         else:
                             print("hue")
                             field.matrix[coord[0]][coord[1]].color = buffer_color
@@ -169,6 +179,7 @@ class class_field:
                             field.draw_cells(screen)
                             pygame.display.flip()
                             break
+
 class player_bar:
     def __init__(self, color):
         self.team = color;
