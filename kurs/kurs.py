@@ -161,15 +161,19 @@ class class_field:
         return [coord[0]//self.size_cell][coord[1]//self.size_cell];
 
     def check_cell(self, coord):
-        if (self.matrix[coord[0]][coord[1]] == tank):
+        print ("ebash")
+        ##type(matrix[0][0]) == flag
+        if (type(self.matrix[coord[0]][coord[1]]) == tank):
             return(True)
 
-        if (self.matrix[coord[0]][coord[1]] == infantry):
+        if (type(self.matrix[coord[0]][coord[1]]) == infantry):
             return(True)
 
-        if (self.matrix[coord[0]][coord[1]] == wheel):
-        print (coord[0]//self.size_cell , " " , coord[1]//self.size_cell)
-        return [coord[0]//self.size_cell,coord[1]//self.size_cell];
+        if (type(self.matrix[coord[0]][coord[1]]) == wheel):
+            print ("blyat")
+            return(True)
+        
+        return(False)
 
     def check_cell(self, coord):
         print ("ebash")
@@ -185,13 +189,6 @@ class class_field:
             return(True)
         
         return(False)
-    def check_selected_cell(self, event):
-        coord = field.get_cell(list(event.pos), event)
-        if (field.check_cell(coord)):
-            while(event.type != pygame.MOUSEBUTTONDOWN):
-                
-            coord_target = field.get_cell(list(event.pos), event)
-            if (field.check_cell(coord_target) == False):
     def check_selected_cell(self, event, screen):
         coord = field.get_cell(list(event.pos))
         check = field.check_cell(coord)
