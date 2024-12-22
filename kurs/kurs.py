@@ -99,7 +99,7 @@ class class_field:
         matrix[-1][-2].color = blue_team_color;
         matrix[-2][-1].color = blue_team_color;
         matrix[-2][-2].color = blue_team_color;
-        matrix[-2][-2] = wheel(blue_team_color);
+        matrix[-2][-2] = tank(blue_team_color);
         matrix[-2][-1] = wheel(blue_team_color);
         return matrix;
     def draw_cells(self, screen):
@@ -187,26 +187,26 @@ class player_bar:
         self.texture_up = pygame.image.load(root_project+'up.png');
         self.texture_control = pygame.image.load(root_project+'control.png');
         
-    def draw_left_interface(self, screen):
+    def draw_left_interface(self, screen, team):
         font.init()
         Font = font.Font(None, 50)
         # отрисовка коммандного ресурса
         r = pygame.Rect(0, 100, 50, 50);
-        pygame.draw.rect(screen, red_team_color, r, 0);
+        pygame.draw.rect(screen, team, r, 0);
         screen.blit(self.texture_command, (0, 100))
         text = str(self.command) + "/" + str(self.command_max);
         a = Font.render(text, 1, (100, 100, 100))
         screen.blit(a, (60, 110))
         
         r = pygame.Rect(0, 200, 50, 50);
-        pygame.draw.rect(screen, red_team_color, r, 0);
+        pygame.draw.rect(screen, team, r, 0);
         screen.blit(self.texture_up, (0, 200))
         text = str(self.power_up);
         a = Font.render(text, 1, (100, 100, 100))
         screen.blit(a, (60, 210))
         
         r = pygame.Rect(0, 300, 50, 50);
-        pygame.draw.rect(screen, red_team_color, r, 0);
+        pygame.draw.rect(screen, team, r, 0);
         screen.blit(self.texture_control, (0, 300))
         text = str(self.power) + "/" + str(self.max_power);
         a = Font.render(text, 1, (100, 100, 100))
@@ -219,7 +219,7 @@ screen.fill(field.color);
 field.draw_cells(screen);
 wh = wheel(red_team_color);
 pl = player_bar();
-pl.draw_left_interface(screen);
+pl.draw_left_interface(screen, blue_team_color);
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
