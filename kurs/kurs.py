@@ -148,6 +148,9 @@ class class_field:
             if (type(self.matrix[coord[0]][coord[1]]) == wheel):
                 return(True)
             
+            if (type(self.matrix[coord[0]][coord[1]]) == flag):
+                return(True)
+            
         return(False)
     
     def movement(self, coord, coord_target, buffer_color):
