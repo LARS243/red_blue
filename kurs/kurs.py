@@ -96,6 +96,9 @@ class flag:
         r = pygame.Rect(x, y, size-1, size-1);
         pygame.draw.rect(screen, self.color, r, 0);
         screen.blit(self.texture, (x, y))
+    def resource_renewal(self):
+        self.health = (self.health + 1) % self.max_health;
+            
 
 class null_cell:
     def __init__(self, color):
