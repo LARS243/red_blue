@@ -103,6 +103,7 @@ class flag:
 class null_cell:
     def __init__(self, color):
         self.color = color;
+        self.supply = True
     def draw_element(self, screen, x, y, size):
         r = pygame.Rect(x, y, size-1, size-1);
         pygame.draw.rect(screen, self.color, r, 0);
@@ -212,6 +213,32 @@ class class_field:
                             field.draw_cells(screen)
                             pygame.display.flip()
                             break
+    def update(self, turn):
+        for i in self.matrix:
+            for j in i:
+                if type(j) != flag and j.color == turn:
+                    j.supply = False;
+        for index in range(320):
+            for i in range(len(self.matrix)):
+                for j in range(len(self.matrix[i])):
+                    if type(self.matrix[i][j]) != flag and self.matrix[i][j].color == turn:
+                        if i < 19:
+                            if (self.matrix[i+1][j].supply == True):
+                                self.matrix[i][j] = True;
+                        if i > 0:
+                            if (self.matrix[i-1][j].suply == True):
+                                self.matrix[i][j] = True;
+                        if j > 0:
+                            if (self.matrix[i][j-1].suply == True):
+                                self.matrix[i][j] = True;
+                        if j < 15:
+                            if (self.matrix[i][j+1].suply == True):
+                                self.matrix[i][j] = True;
+    def update_units(self, turn):
+        for i in self.matrix:
+            for j in self.matrix:
+                if (self.matrix[i][j].color == turn):
+                    self.matrix[i][j].resource_renewal();
 
 class player_bar:
     def __init__(self, color):
@@ -330,4 +357,5 @@ while True:
                 else:
                     turn = reverse_color(turn);
                     pl_bar_red.draw_left_interface(screen);
+    field.update(turn);
     pygame.display.flip();
