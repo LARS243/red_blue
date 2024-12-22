@@ -19,11 +19,19 @@ class tank:
         self.max_health = 10
         self.max_mobile = 3
         self.mobile = 3
+        self.supply = True
 
     def draw_element(self, screen, x, y, size):
         r = pygame.Rect(x, y, size-1, size-1);
         pygame.draw.rect(screen, self.color, r, 0);
         screen.blit(self.texture, (x, y))
+    
+    def resource_renewal(self):
+        self.mobile = self.max_mobile
+        if self.supply:
+            self.health = (self.health + 1) % self.max_health;
+        else:
+            self.health -= 1;
 
 class infantry:
     def __init__(self, color):
@@ -34,12 +42,19 @@ class infantry:
         self.max_health = 2
         self.max_mobile = 1
         self.mobile = 1
+        self.supply = True
 
     def draw_element(self, screen, x, y, size):
         r = pygame.Rect(x, y, size-1, size-1);
         pygame.draw.rect(screen, self.color, r, 0);
         screen.blit(self.texture, (x, y))
-    
+        
+    def resource_renewal(self):
+        self.mobile = self.max_mobile
+        if self.supply:
+            self.health = (self.health + 1) % self.max_health;
+        else:
+            self.health -= 1;
         
 
 class wheel:
@@ -51,12 +66,19 @@ class wheel:
         self.max_health = 5
         self.max_mobile = 5
         self.mobile = 5
+        self.supply = True
 
     def draw_element(self, screen, x, y, size):
         r = pygame.Rect(x, y, size-1, size-1);
         pygame.draw.rect(screen, self.color, r, 0);
         screen.blit(self.texture, (x, y))
-    
+        
+    def resource_renewal(self):
+        self.mobile = self.max_mobile
+        if self.supply:
+            self.health = (self.health + 1) % self.max_health;
+        else:
+            self.health -= 1;
     
     
 
@@ -198,6 +220,10 @@ class player_bar:
         self.texture_up = pygame.image.load(root_project+'up.png');
         self.texture_control = pygame.image.load(root_project+'control.png');
         
+        self.texture_damage = pygame.image.load(root_project+'damage.png');
+        self.texture_hp = pygame.image.load(root_project+'hp.png');
+        self.texture_move = pygame.image.load(root_project+'mov.png');
+        
     def draw_left_interface(self, screen):
         font.init()
         Font = font.Font(None, 50)
@@ -222,6 +248,34 @@ class player_bar:
         text = str(self.power) + "/" + str(self.max_power);
         a = Font.render(text, 1, (100, 100, 100))
         screen.blit(a, (60, 310))
+    
+    def draw_right_interface(self, screen, unit):
+        r = pygame.Rect(1200, 0, self.size_bar_x, self.size_y);
+        pygame.draw.rect(screen,  black_color, r, 0);
+        font.init()
+        Font = font.Font(None, 50)
+        #отрисовка урона
+        r = pygame.Rect(1200, 100, 50, 50);
+        pygame.draw.rect(screen, self.team , r, 0);
+        screen.blit(self.texture_damage, (1200, 100))
+        text = str(unit.atack);
+        a = Font.render(text, 1, (100, 100, 100))
+        screen.blit(a, (1260, 110))
+        #отрисовка здоровья
+        r = pygame.Rect(1200, 200, 50, 50);
+        pygame.draw.rect(screen, self.team , r, 0);
+        screen.blit(self.texture_hp, (1201, 201))
+        text = str(unit.health) + "/" + str(unit.max_health);
+        a = Font.render(text, 1, (100, 100, 100))
+        screen.blit(a, (1260, 210))
+        #отрисовка движения
+        r = pygame.Rect(1200, 300, 50, 50);
+        pygame.draw.rect(screen, self.team , r, 0);
+        screen.blit(self.texture_move, (1201, 301))
+        text = str(unit.mobile) + "/" + str(unit.max_mobile);
+        a = Font.render(text, 1, (100, 100, 100))
+        screen.blit(a, (1260, 310))
+
 
     def resource_renewal(self):
         self.command = self.command_max;
@@ -243,6 +297,8 @@ pl_bar_red = player_bar(red_team_color);
 pl_bar_blue = player_bar(blue_team_color);
 turn = red_team_color;
 pl_bar_red.draw_left_interface(screen);
+wh = wheel(red_team_color);
+pl_bar_red.draw_right_interface(screen, wh);
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -250,13 +306,15 @@ while True:
             sys.exit();
         if event.type == pygame.MOUSEBUTTONDOWN: 
             if event.button == 1: 
-                selected_element = field.check_selected_cell(event, screen)
-                print(selected_element)
+                selected_element = field.get_cell(list(event.pos))
+                if (field.check_cell(selected_element)):
+                    pl_bar_red.draw_right_interface(screen, field.matrix[selected_element[0]][selected_element[1]]);
                 field.check_selected_cell(event, screen)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 if turn == red_team_color:
                     turn = reverse_color(turn);
+                    print("a");
                     pl_bar_blue.draw_left_interface(screen);
                 else:
                     turn = reverse_color(turn);
