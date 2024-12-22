@@ -8,29 +8,12 @@ null_team_color = (220, 220, 220);
 red_team_color = (205, 92, 92);
 blue_team_color = (135, 206, 235);
 black_color = (150, 150, 150);
-root_project = "D:/Python/red_blue/kurs/";
+root_project = "C:/kurs/red_blue/kurs/";
 
 class tank:
     def __init__(self, color):
         self.texture = pygame.image.load(root_project+'tank.png');
         self.color = color
-        health = 10
-        atack = 4
-        max_health = 10
-        max_mobile = 3
-        mobile = 3
-
-    def get_health(self):
-        return (self.health)
-
-    def get_max_mobile(self):
-        return(self.max_mobile)
-
-    def get_atack(self):
-        return(self.atack)
-
-    def set_health(self, new_health):
-        self.health = new_health
         self.health = 10
         self.atack = 4
         self.max_health = 10
@@ -46,23 +29,6 @@ class infantry:
     def __init__(self, color):
         self.texture = pygame.image.load(root_project+'infantry.png');
         self.color = color
-        health = 2
-        atack = 1
-        max_health = 2
-        max_mobile = 1
-        mobile = 1
-
-    def get_health(self):
-        return (self.health)
-
-    def get_max_mobile(self):
-        return(self.max_mobile)
-
-    def get_atack(self):
-        return(self.atack)
-
-    def set_health(self, new_health):
-        self.health = new_health
         self.health = 2
         self.atack = 1
         self.max_health = 2
@@ -80,28 +46,12 @@ class wheel:
     def __init__(self, color):
         self.texture = pygame.image.load(root_project+'wheel.png')
         self.color = color
-        health = 5
-        atack = 2
-        max_health = 5
-        max_mobile = 5
-        mobile = 5
-
-    def get_health(self):
-        return (self.health)
-
-    def get_max_mobile(self):
-        return(self.max_mobile)
-
-    def get_atack(self):
-        return(self.atack)
-
-    def set_health(self, new_health):
-        self.health = new_health
         self.health = 5
         self.atack = 2
         self.max_health = 5
         self.max_mobile = 5
         self.mobile = 5
+
     def draw_element(self, screen, x, y, size):
         r = pygame.Rect(x, y, size-1, size-1);
         pygame.draw.rect(screen, self.color, r, 0);
@@ -144,12 +94,13 @@ class class_field:
         matrix[0][0] = flag(red_team_color);
         matrix[0][1].color = red_team_color;
         matrix[1][0].color = red_team_color;
-        matrix[1][1] = wheel(red_team_color);
-        
+        matrix[1][1].color = red_team_color;
         matrix[-1][-1] = flag(blue_team_color);
         matrix[-1][-2].color = blue_team_color;
         matrix[-2][-1].color = blue_team_color;
+        matrix[-2][-2].color = blue_team_color;
         matrix[-2][-2] = wheel(blue_team_color);
+        matrix[-2][-1] = wheel(blue_team_color);
         return matrix;
     def draw_cells(self, screen):
         for i in range(len(self.matrix)):
@@ -158,7 +109,8 @@ class class_field:
 
     def get_cell(self, coord):
         coord[0] -= self.size_bar_x;
-        return [coord[0]//self.size_cell][coord[1]//self.size_cell];
+        print (coord[0]//self.size_cell , " " , coord[1]//self.size_cell)
+        return [coord[0]//self.size_cell,coord[1]//self.size_cell];
 
     def check_cell(self, coord):
         print ("ebash")
@@ -174,21 +126,7 @@ class class_field:
             return(True)
         
         return(False)
-
-    def check_cell(self, coord):
-        print ("ebash")
-        ##type(matrix[0][0]) == flag
-        if (type(self.matrix[coord[0]][coord[1]]) == tank):
-            return(True)
-
-        if (type(self.matrix[coord[0]][coord[1]]) == infantry):
-            return(True)
-
-        if (type(self.matrix[coord[0]][coord[1]]) == wheel):
-            print ("blyat")
-            return(True)
-        
-        return(False)
+    
     def check_selected_cell(self, event, screen):
         coord = field.get_cell(list(event.pos))
         check = field.check_cell(coord)
@@ -289,7 +227,7 @@ while True:
             sys.exit();
         if event.type == pygame.MOUSEBUTTONDOWN: 
             if event.button == 1: 
-                selected_element = field.check_selected_cell(event)
+                selected_element = field.check_selected_cell(event, screen)
                 print(selected_element)
                 field.check_selected_cell(event, screen)
     pygame.display.flip();
