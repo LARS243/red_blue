@@ -8,7 +8,7 @@ null_team_color = (220, 220, 220);
 red_team_color = (205, 92, 92);
 blue_team_color = (135, 206, 235);
 black_color = (150, 150, 150);
-root_project = "D:/Python/red_blue/kurs/";
+root_project = "C:/kurs/red_blue/kurs/";
 
 class tank:
     def __init__(self, color):
@@ -126,16 +126,13 @@ class class_field:
                 spisok.append(null_cell(null_team_color));
             matrix.append(spisok);
         matrix[0][0] = flag(red_team_color);
-        matrix[0][1].color = red_team_color;
-        matrix[1][0].color = red_team_color;
-        matrix[1][1].color = red_team_color;
-        matrix[1][1] = wheel(red_team_color);
+        matrix[0][1] = infantry(red_team_color);
+        matrix[1][0] = infantry(red_team_color);
+        matrix[1][1] = infantry(red_team_color);
         matrix[-1][-1] = flag(blue_team_color);
-        matrix[-1][-2].color = blue_team_color;
-        matrix[-2][-1].color = blue_team_color;
-        matrix[-2][-2].color = blue_team_color;
-        matrix[-2][-2] = tank(blue_team_color);
-        matrix[-2][-1] = wheel(blue_team_color);
+        matrix[-1][-2] = infantry(blue_team_color);
+        matrix[-2][-1] = infantry(blue_team_color);
+        matrix[-2][-2] = infantry(blue_team_color);
         return matrix;
     def draw_cells(self, screen):
         for i in range(len(self.matrix)):
@@ -269,13 +266,16 @@ class player_bar:
         
         self.command_max = 10;
         self.command = 10;
-        self.power = 300;
-        self.max_power = 300;
+        self.power = 0;
+        self.max_power = 0;
         self.power_up = 0;
         
         self.texture_command = pygame.image.load(root_project+'command.png');
         self.texture_up = pygame.image.load(root_project+'up.png');
         self.texture_control = pygame.image.load(root_project+'control.png');
+        self.texture_infantry = pygame.image.load(root_project+'infantry.png');
+        self.texture_wheel = pygame.image.load(root_project+'wheel.png');
+        self.texture_tank = pygame.image.load(root_project+'tank.png');
         
         self.texture_damage = pygame.image.load(root_project+'damage.png');
         self.texture_hp = pygame.image.load(root_project+'hp.png');
@@ -309,6 +309,27 @@ class player_bar:
         text = str(self.power) + "/" + str(self.max_power);
         a = Font.render(text, 1, (100, 100, 100))
         screen.blit(a, (60, 310))
+        # отрисовка пехоты
+        r = pygame.Rect(0, 400, 50, 50);
+        pygame.draw.rect(screen, self.team , r, 0);
+        screen.blit(self.texture_infantry, (0, 400))
+        text = "5/tab+1";
+        a = Font.render(text, 1, (100, 100, 100))
+        screen.blit(a, (60, 410))
+        #отрисовка мотопехоты
+        r = pygame.Rect(0, 500, 50, 50);
+        pygame.draw.rect(screen, self.team , r, 0);
+        screen.blit(self.texture_wheel, (0, 500))
+        text = "25/tab+2";
+        a = Font.render(text, 1, (100, 100, 100))
+        screen.blit(a, (60, 510))
+        #отрисовка танка
+        r = pygame.Rect(0, 600, 50, 50);
+        pygame.draw.rect(screen, self.team , r, 0);
+        screen.blit(self.texture_tank, (0, 600))
+        text = "50/tab+3";
+        a = Font.render(text, 1, (100, 100, 100))
+        screen.blit(a, (60, 610))
     
     def draw_right_interface(self, screen, unit):
         r = pygame.Rect(1200, 0, self.size_bar_x, self.size_y);
@@ -361,7 +382,7 @@ def reverse_color(color):
         return blue_team_color
     
     
-def select_cell(event, these_selected_team):
+def buy_unit(event, these_selected_team):
     coord = field.get_cell(list(event.pos))
     if(field.check_cell(coord) == False and field.matrix[coord[0]][coord[1]].color == these_selected_team.team):
         field.matrix[coord[0]][coord[1]].color = black_color
@@ -371,18 +392,8 @@ def select_cell(event, these_selected_team):
         while(add):
             for event_k in pygame.event.get():
                 if event_k.type == pygame.KEYDOWN:
-                    if (event_k.key == pygame.K_1 and these_selected_team.power >= 3):
+                    if (event_k.key == pygame.K_1 and these_selected_team.power >= 5):
                         field.matrix[coord[0]][coord[1]] = infantry(these_selected_team.team)
-                        field.matrix[coord[0]][coord[1]].mobile = 0
-                        these_selected_team.power -= 3
-                        these_selected_team.command -= 1
-                        field.draw_cells(screen)
-                        these_selected_team.draw_left_interface(screen)
-                        pygame.display.flip()
-                        add = False
-
-                    if (event_k.key == pygame.K_2 and these_selected_team.power >= 5):
-                        field.matrix[coord[0]][coord[1]] = wheel(these_selected_team.team)
                         field.matrix[coord[0]][coord[1]].mobile = 0
                         these_selected_team.power -= 5
                         these_selected_team.command -= 1
@@ -391,10 +402,20 @@ def select_cell(event, these_selected_team):
                         pygame.display.flip()
                         add = False
 
-                    if (event_k.key == pygame.K_3 and these_selected_team.power >= 7):
+                    if (event_k.key == pygame.K_2 and these_selected_team.power >= 25):
+                        field.matrix[coord[0]][coord[1]] = wheel(these_selected_team.team)
+                        field.matrix[coord[0]][coord[1]].mobile = 0
+                        these_selected_team.power -= 25
+                        these_selected_team.command -= 1
+                        field.draw_cells(screen)
+                        these_selected_team.draw_left_interface(screen)
+                        pygame.display.flip()
+                        add = False
+
+                    if (event_k.key == pygame.K_3 and these_selected_team.power >= 50):
                         field.matrix[coord[0]][coord[1]] = tank(these_selected_team.team)
                         field.matrix[coord[0]][coord[1]].mobile = 0
-                        these_selected_team.power -= 7
+                        these_selected_team.power -= 50
                         these_selected_team.command -= 1
                         field.draw_cells(screen)
                         these_selected_team.draw_left_interface(screen)
@@ -415,7 +436,7 @@ def new_unit(these_selected_team, field, screen):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN: 
                 if (event.button == 1):
-                    select_cell(event, these_selected_team)
+                    buy_unit(event, these_selected_team)
                 else:
                     add_unit = False
                     field.draw_cells(screen)
@@ -470,10 +491,12 @@ while True:
                     turn = reverse_color(turn);
                     pl_bar_blue.resource_renewal(max_power, power_up);
                     pl_bar_red.draw_left_interface(screen);
-    pygame.display.flip();
+            pygame.display.flip();
             if event.key == pygame.K_TAB:
                 if (turn == red_team_color):
                     new_unit(pl_bar_red, field, screen)
+                    pl_bar_red.draw_left_interface(screen);
                 else:
                     new_unit(pl_bar_blue, field, screen)
+                    pl_bar_blue.draw_left_interface(screen);
     pygame.display.flip();
